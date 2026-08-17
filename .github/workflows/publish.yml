@@ -42,7 +42,7 @@ jobs:
       - name: Build and repair Windows wheels
         uses: pypa/cibuildwheel@v2.22.0
         env:
-          CIBW_BUILD: "cp39-win_amd64 cp310-win_amd64 cp311-win_amd64 cp312-win_amd64 cp313-win_amd64 cp314-win_amd64"
+          CIBW_BUILD: "cp39-win_amd64 cp310-win_amd64 cp311-win_amd64 cp312-win_amd64 cp313-win_amd64"
           CIBW_ARCHS_WINDOWS: "AMD64"
           CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
           CIBW_ENVIRONMENT_WINDOWS: 'BOOST_ROOT="C:\\boost_1_83_0" QT_DIR="C:\\Qt\\5.15.2\\msvc2019_64"'
@@ -69,7 +69,7 @@ jobs:
       - name: Build Linux wheels via cibuildwheel
         uses: pypa/cibuildwheel@v2.22.0
         env:
-          CIBW_BUILD: "cp39-manylinux_x86_64 cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp314-manylinux_x86_64"
+          CIBW_BUILD: "cp39-manylinux_x86_64 cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64"
           CIBW_ARCHS_LINUX: "x86_64"
           CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_28"
           CIBW_BEFORE_ALL_LINUX: "dnf --enablerepo=powertools install -y qt5-qtbase-devel boost-devel || dnf --enablerepo=crb install -y qt5-qtbase-devel boost-devel || dnf install -y qt5-qtbase-devel boost-devel"
