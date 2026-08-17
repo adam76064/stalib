@@ -7,56 +7,70 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest]
-
+  build_windows_wheels:
+    name: Build Windows Wheels
+    runs-on: windows-2022
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install Qt 5 & Boost (Windows)
-        if: runner.os == 'Windows'
+      - name: Install Qt 5
         uses: jurplel/install-qt-action@v3
         with:
           version: '5.15.2'
           arch: 'win64_msvc2019_64'
 
-      - name: Install Boost (Windows)
-        if: runner.os == 'Windows'
+      - name: Install Boost
+        id: install-boost
         uses: MarkusJx/install-boost@v2.4.5
         with:
           boost_version: '1.82.0'
 
-      - name: Install Qt 5 & Boost (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y qtbase5-dev libqt5xmlpatterns5-dev libboost-all-dev
-
-      - name: Build wheels via cibuildwheel
+      - name: Build and repair Windows wheels
         uses: pypa/cibuildwheel@v2.22.0
         env:
-          CIBW_BUILD: "cp39-* cp310-* cp311-* cp312-* cp313-* cp314-*"
-          CIBW_SKIP: "*-musllinux_* pp*"
+          CIBW_BUILD: "cp39-win_amd64 cp310-win_amd64 cp311-win_amd64 cp312-win_amd64 cp313-win_amd64 cp314-win_amd64"
+          CIBW_ARCHS_WINDOWS: "AMD64"
           CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
-          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -w {dest_dir} {wheel}"
-          CIBW_ENVIRONMENT_WINDOWS: 'BOOST_ROOT="${{ steps.install-boost.outputs.BOOST_ROOT }}"'
+          CIBW_ENVIRONMENT_WINDOWS: 'BOOST_ROOT="${{ steps.install-boost.outputs.BOOST_ROOT }}" QT_DIR="${{ env.Qt5_Dir }}"'
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: 'delvewheel repair --add-path "${{ env.Qt5_Dir }}/bin" -w {dest_dir} {wheel}'
 
-      - name: Upload wheel artifacts
+      - name: Upload Windows wheels
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ matrix.os }}
+          name: wheels-windows
+          path: ./wheelhouse/*.whl
+
+  build_linux_wheels:
+    name: Build Linux Wheels
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build Linux wheels via cibuildwheel
+        uses: pypa/cibuildwheel@v2.22.0
+        env:
+          CIBW_BUILD: "cp39-manylinux_x86_64 cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp314-manylinux_x86_64"
+          CIBW_ARCHS_LINUX: "x86_64"
+          CIBW_MANYLINUX_X86_64_IMAGE: "manylinux_2_28"
+          CIBW_BEFORE_ALL_LINUX: "dnf --enablerepo=powertools install -y qt5-qtbase-devel boost-devel || dnf --enablerepo=crb install -y qt5-qtbase-devel boost-devel || dnf install -y qt5-qtbase-devel boost-devel"
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: "auditwheel repair -w {dest_dir} {wheel}"
+
+      - name: Upload Linux wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-linux
           path: ./wheelhouse/*.whl
 
   build_sdist:
@@ -83,7 +97,7 @@ jobs:
 
   publish_to_pypi:
     name: Publish to PyPI
-    needs: [build_wheels, build_sdist]
+    needs: [build_windows_wheels, build_linux_wheels, build_sdist]
     runs-on: ubuntu-latest
     environment:
       name: pypi
