@@ -56,6 +56,8 @@ def find_boost_path():
         r"C:\local\boost_1_83_0",
         r"C:\local\boost_1_82_0",
         r"C:\local\boost",
+        r"C:\boost_1_83_0",
+        r"C:\boost_1_82_0",
         r"C:\boost",
         "/usr/include",
         "/usr/local/include",
