@@ -41,5 +41,6 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/4lex4/scantailor-advanced"
-Repository = "https://github.com/4lex4/scantailor-advanced"
+Homepage = "https://github.com/adam76064/stalib"
+Repository = "https://github.com/adam76064/stalib"
+"Original ScanTailor Advanced" = "https://github.com/4lex4/scantailor-advanced"

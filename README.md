@@ -37,7 +37,7 @@ pip install stalib
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/stalib.git
+git clone https://github.com/adam76064/stalib.git
 cd stalib
 
 # Install dependencies

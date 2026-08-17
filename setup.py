@@ -180,7 +180,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Joseph Artsimovich, 4lex4, STALib Contributors",
-    url="https://github.com/4lex4/scantailor-advanced",
+    url="https://github.com/adam76064/stalib",
     license="GPLv3",
     packages=["stalib"],
     ext_modules=ext_modules,
