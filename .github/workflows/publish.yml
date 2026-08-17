@@ -37,10 +37,17 @@ jobs:
           }
           echo "BOOST_ROOT=$boostDir" >> $env:GITHUB_ENV
           echo "QT_DIR=C:\Qt\5.15.2\msvc2019_64" >> $env:GITHUB_ENV
-          Write-Host "Boost configured at $boostDir"
+      - name: Pre-cache virtualenv
+        shell: pwsh
+        run: |
+          $cacheDir = "$env:LOCALAPPDATA\pypa\cibuildwheel\Cache"
+          New-Item -ItemType Directory -Force -Path $cacheDir
+          curl.exe -sL "https://bootstrap.pypa.io/virtualenv/virtualenv.pyz" -o "$cacheDir\virtualenv-20.27.1.pyz"
+          curl.exe -sL "https://bootstrap.pypa.io/virtualenv/virtualenv.pyz" -o "$cacheDir\virtualenv.pyz"
+          pip install --upgrade virtualenv delvewheel
 
       - name: Build and repair Windows wheels
-        uses: pypa/cibuildwheel@v2.22.0
+        uses: pypa/cibuildwheel@v2.23.0
         env:
           CIBW_BUILD: "cp39-win_amd64 cp310-win_amd64 cp311-win_amd64 cp312-win_amd64 cp313-win_amd64"
           CIBW_ARCHS_WINDOWS: "AMD64"
@@ -67,7 +74,7 @@ jobs:
           python-version: '3.11'
 
       - name: Build Linux wheels via cibuildwheel
-        uses: pypa/cibuildwheel@v2.22.0
+        uses: pypa/cibuildwheel@v2.23.0
         env:
           CIBW_BUILD: "cp39-manylinux_x86_64 cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64"
           CIBW_ARCHS_LINUX: "x86_64"
