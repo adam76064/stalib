@@ -1,9 +1,9 @@
-# STALib (ScanTailor Advanced Library)
+# ScanTailor Advanced (Python Library)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Python: >=3.8](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
 
-**STALib** is a high-performance Python image processing library that encapsulates the battle-tested core algorithms of [ScanTailor Advanced](https://github.com/4lex4/scantailor-advanced) (originally authored by Joseph Artsimovich and 4lex4). 
+**ScanTailor Advanced (`scantailor-advanced`)** is a high-performance Python image processing library that encapsulates the battle-tested core algorithms of [ScanTailor Advanced](https://github.com/4lex4/scantailor-advanced) (originally authored by Joseph Artsimovich and 4lex4). 
 
 All image processing algorithms are compiled down to optimized C++ binaries with native `pybind11` bindings, operating directly on standard NumPy `uint8` arrays and PIL Images.
 
@@ -24,7 +24,7 @@ All image processing algorithms are compiled down to optimized C++ binaries with
 
 ### From PyPI (Precompiled Wheels)
 ```bash
-pip install stalib
+pip install scantailor-advanced
 ```
 
 ### Building from Source

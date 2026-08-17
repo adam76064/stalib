@@ -174,7 +174,7 @@ if os.path.exists("README.md"):
         long_description = f.read()
 
 setup(
-    name="stalib",
+    name="scantailor-advanced",
     version="1.0.0",
     description="ScanTailor Advanced Core Image Processing Library for Python",
     long_description=long_description,
