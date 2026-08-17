@@ -32,20 +32,20 @@ jobs:
       - name: Set up Boost Headers
         shell: pwsh
         run: |
-          $boostDir = "C:\boost_1_83_0"
-          if (!(Test-Path "$boostDir\boost")) {
+          New-Item -ItemType Directory -Force -Path "C:\boost"
+          if (!(Test-Path "C:\boost\boost")) {
             Write-Host "Downloading Boost 1.83.0 source archive..."
             curl.exe -sL "https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.gz" -o "$env:TEMP\boost.tar.gz"
-            tar.exe -xzf "$env:TEMP\boost.tar.gz" -C "C:\"
+            tar.exe -xzf "$env:TEMP\boost.tar.gz" --strip-components=1 -C "C:\boost"
           }
-          echo "BOOST_ROOT=$boostDir" >> $env:GITHUB_ENV
+          echo "BOOST_ROOT=C:\boost" >> $env:GITHUB_ENV
           echo "QT_DIR=C:\Qt\5.15.2\msvc2019_64" >> $env:GITHUB_ENV
 
       - name: Build and Repair Wheel
         shell: pwsh
         run: |
           pip install pybind11 delvewheel setuptools wheel
-          $env:BOOST_ROOT = "C:\boost_1_83_0"
+          $env:BOOST_ROOT = "C:\boost"
           $env:QT_DIR = "C:\Qt\5.15.2\msvc2019_64"
           pip wheel . -w dist --no-deps
           New-Item -ItemType Directory -Force -Path repaired_dist
