@@ -8,23 +8,26 @@ on:
 
 jobs:
   build_windows_wheels:
-    name: Build Windows Wheels
+    name: Build Windows Wheel (Python ${{ matrix.python-version }})
     runs-on: windows-2022
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install Qt 5 via aqtinstall
         shell: pwsh
         run: |
           pip install aqtinstall
           aqt install-qt windows desktop 5.15.2 win64_msvc2019_64 --outputdir C:\Qt
-          echo "QT_DIR=C:\Qt\5.15.2\msvc2019_64" >> $env:GITHUB_ENV
 
       - name: Set up Boost Headers
         shell: pwsh
@@ -37,29 +40,24 @@ jobs:
           }
           echo "BOOST_ROOT=$boostDir" >> $env:GITHUB_ENV
           echo "QT_DIR=C:\Qt\5.15.2\msvc2019_64" >> $env:GITHUB_ENV
-      - name: Pre-cache virtualenv
+
+      - name: Build and Repair Wheel
         shell: pwsh
         run: |
-          $cacheDir = "$env:LOCALAPPDATA\pypa\cibuildwheel\Cache"
-          New-Item -ItemType Directory -Force -Path $cacheDir
-          curl.exe -sL "https://bootstrap.pypa.io/virtualenv/virtualenv.pyz" -o "$cacheDir\virtualenv-20.27.1.pyz"
-          curl.exe -sL "https://bootstrap.pypa.io/virtualenv/virtualenv.pyz" -o "$cacheDir\virtualenv.pyz"
-          pip install --upgrade virtualenv delvewheel
+          pip install pybind11 delvewheel setuptools wheel
+          $env:BOOST_ROOT = "C:\boost_1_83_0"
+          $env:QT_DIR = "C:\Qt\5.15.2\msvc2019_64"
+          pip wheel . -w dist --no-deps
+          New-Item -ItemType Directory -Force -Path repaired_dist
+          Get-ChildItem dist/*.whl | ForEach-Object {
+            delvewheel repair --add-path C:/Qt/5.15.2/msvc2019_64/bin -w repaired_dist $_.FullName
+          }
 
-      - name: Build and repair Windows wheels
-        uses: pypa/cibuildwheel@v2.23.0
-        env:
-          CIBW_BUILD: "cp39-win_amd64 cp310-win_amd64 cp311-win_amd64 cp312-win_amd64 cp313-win_amd64"
-          CIBW_ARCHS_WINDOWS: "AMD64"
-          CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
-          CIBW_ENVIRONMENT_WINDOWS: 'BOOST_ROOT="C:/boost_1_83_0" QT_DIR="C:/Qt/5.15.2/msvc2019_64"'
-          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: 'delvewheel repair --add-path C:/Qt/5.15.2/msvc2019_64/bin -w {dest_dir} {wheel}'
-
-      - name: Upload Windows wheels
+      - name: Upload Windows wheel
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-windows
-          path: ./wheelhouse/*.whl
+          name: wheels-windows-${{ matrix.python-version }}
+          path: repaired_dist/*-win_amd64.whl
 
   build_linux_wheels:
     name: Build Linux Wheels
