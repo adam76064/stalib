@@ -19,12 +19,12 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Qt 5
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: '5.15.2'
-          arch: 'win64_msvc2019_64'
-          dir: 'C:/Qt'
+      - name: Install Qt 5 via aqtinstall
+        shell: pwsh
+        run: |
+          pip install aqtinstall
+          aqt install-qt windows desktop 5.15.2 win64_msvc2019_64 --outputdir C:\Qt
+          echo "QT_DIR=C:\Qt\5.15.2\msvc2019_64" >> $env:GITHUB_ENV
 
       - name: Set up Boost Headers
         shell: pwsh
