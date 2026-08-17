@@ -1,0 +1,29 @@
+# Python build and cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+*.pyd
+*.so
+*.dylib
+
+# Visual Studio & IDEs
+.vs/
+*.sln
+*.vcxproj
+*.user
+.vscode/
+.idea/
+
+# CMake artifacts
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# System files
+.DS_Store
+Thumbs.db

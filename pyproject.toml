@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0", "pybind11>=2.10.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stalib"
+version = "1.0.0"
+description = "ScanTailor Advanced Core Image Processing Library for Python"
+readme = "README.md"
+license = { text = "GPL-3.0-or-later" }
+requires-python = ">=3.8"
+authors = [
+    { name = "Joseph Artsimovich" },
+    { name = "4lex4" },
+    { name = "STALib Contributors" }
+]
+keywords = [
+    "scantailor",
+    "image-processing",
+    "document-scanner",
+    "deskew",
+    "binarization",
+    "ocr",
+    "layout-analysis"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: C++",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS"
+]
+dependencies = [
+    "numpy>=1.21",
+    "Pillow>=9.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/4lex4/scantailor-advanced"
+Repository = "https://github.com/4lex4/scantailor-advanced"
