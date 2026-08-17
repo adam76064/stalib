@@ -28,19 +28,14 @@ jobs:
       - name: Set up Boost Headers
         shell: pwsh
         run: |
-          if (Test-Path "$env:BOOST_ROOT_1_83_0") {
-            Write-Host "Using pre-installed Boost 1.83.0 from runner"
-            echo "BOOST_ROOT=$env:BOOST_ROOT_1_83_0" >> $env:GITHUB_ENV
-          } elseif (Test-Path "C:\local\boost_1_83_0") {
-            echo "BOOST_ROOT=C:\local\boost_1_83_0" >> $env:GITHUB_ENV
-          } elseif (Test-Path "C:\local\boost_1_82_0") {
-            echo "BOOST_ROOT=C:\local\boost_1_82_0" >> $env:GITHUB_ENV
-          } else {
-            Write-Host "Downloading Boost release archive..."
-            Invoke-WebRequest -Uri "https://github.com/boostorg/boost/releases/download/boost-1.82.0/boost-1.82.0-bdist-windows-x86_64.zip" -OutFile "$env:TEMP\boost.zip"
-            Expand-Archive "$env:TEMP\boost.zip" -DestinationPath "C:\boost" -Force
-            echo "BOOST_ROOT=C:\boost" >> $env:GITHUB_ENV
+          $boostDir = "C:\boost_1_83_0"
+          if (!(Test-Path "$boostDir\boost")) {
+            Write-Host "Downloading Boost 1.83.0 source archive..."
+            curl.exe -sL "https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.gz" -o "$env:TEMP\boost.tar.gz"
+            tar.exe -xzf "$env:TEMP\boost.tar.gz" -C "C:\"
           }
+          echo "BOOST_ROOT=$boostDir" >> $env:GITHUB_ENV
+          Write-Host "Boost configured at $boostDir"
 
       - name: Build and repair Windows wheels
         uses: pypa/cibuildwheel@v2.22.0
