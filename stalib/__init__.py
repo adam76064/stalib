@@ -6,7 +6,10 @@ from .page_layout import MarginCalculator
 from .output import OutputProcessor
 from .pipeline import Pipeline
 
+__version__ = "1.0.1"
+
 __all__ = [
+    "__version__",
     "FixOrientationProcessor",
     "PageSplitter",
     "DeskewProcessor",
