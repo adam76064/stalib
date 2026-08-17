@@ -29,15 +29,25 @@ jobs:
           pip install aqtinstall
           aqt install-qt windows desktop 5.15.2 win64_msvc2019_64 --outputdir C:\Qt
 
+      - name: Cache Boost Headers
+        id: cache-boost
+        uses: actions/cache@v4
+        with:
+          path: C:\boost
+          key: boost-1.83.0-headers-v1
+
       - name: Set up Boost Headers
+        if: steps.cache-boost.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path "C:\boost"
-          if (!(Test-Path "C:\boost\boost")) {
-            Write-Host "Downloading Boost 1.83.0 source archive..."
-            curl.exe -sL "https://github.com/boostorg/boost/releases/download/boost-1.83.0/boost-1.83.0.tar.gz" -o "$env:TEMP\boost.tar.gz"
-            tar.exe -xzf "$env:TEMP\boost.tar.gz" --strip-components=1 -C "C:\boost"
-          }
+          Write-Host "Downloading official Boost 1.83.0 release archive..."
+          curl.exe -sL "https://archives.boost.io/release/1.83.0/source/boost_1_83_0.tar.gz" -o "$env:TEMP\boost.tar.gz"
+          tar.exe -xzf "$env:TEMP\boost.tar.gz" --strip-components=1 -C "C:\boost"
+
+      - name: Configure Environment
+        shell: pwsh
+        run: |
           echo "BOOST_ROOT=C:\boost" >> $env:GITHUB_ENV
           echo "QT_DIR=C:\Qt\5.15.2\msvc2019_64" >> $env:GITHUB_ENV
 
